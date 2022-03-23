@@ -21,6 +21,16 @@ class ProductController extends Controller
         ]);
     }
 
+    public function popular()
+    {
+        $product = Product::where('popular', 1)->get();
+        return response()->json([
+            'status'=>200,
+            'product'=>$product,
+           
+        ]);
+    }
+
     public function edit($id)
     {
       $product = Product::find($id);
@@ -48,7 +58,7 @@ class ProductController extends Controller
             'selling_price'=>'required|max:20',
             'original_price'=>'required|max:20',
             'qty'=>'required|max:4',
-            'pimage'=>'required|image|mimes:jpeg,png,jpg,glb',
+            'pimage'=>'required|image|mimes:jpeg,png,jpg',
         ]);
 
         if($validator->fails()){
@@ -130,7 +140,7 @@ class ProductController extends Controller
                     $path = $product->pimage;
 
                     if(File::exists($path)){
-                        file::delete();
+                        File::delete();
                     }
 
                     $file = $request->file('pimage');

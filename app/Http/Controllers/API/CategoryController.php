@@ -52,6 +52,7 @@ class CategoryController extends Controller
             'meta_title'=>'required|max:191',
             'slug'=>'required|max:191',
             'name'=>'required|max:191',
+            'cimage'=>'required|image|mimes:jpeg,png,jpg|max:500000',
         ]); 
 
         if($validator->fails()){
@@ -68,6 +69,15 @@ class CategoryController extends Controller
             $category-> slug = $request -> input('slug');
             $category-> name = $request -> input('name');
             $category-> description = $request -> input('description');
+
+            if($request -> hasFile('cimage')){
+                $file = $request->file('cimage');
+                $extension = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extension;
+                $file->move('uploads/category/',$filename);
+                $category -> cimage = 'uploads/category/'.$filename;
+            }
+
             $category-> status = $request -> input('status') === true ? '1': '0';
             $category -> save();
             return response()->json([
@@ -85,6 +95,7 @@ class CategoryController extends Controller
         'meta_title'=>'required|max:191',
         'slug'=>'required|max:191',
         'name'=>'required|max:191',
+        'cimage'=>'image|mimes:jpeg,png,jpg|max:500000',
     ]); 
 
     if($validator->fails()){
@@ -102,6 +113,21 @@ class CategoryController extends Controller
             $category-> slug = $request -> input('slug');
             $category-> name = $request -> input('name');
             $category-> description = $request -> input('description');
+
+            if($request -> hasFile('cimage')){
+                $path = $category->cimage;
+
+                if(File::exists($path)){
+                    File::delete();
+                }
+
+                $file = $request->file('cimage');
+                $extension = $file->getClientOriginalExtension();
+                $filename = time().'.'.$extension;
+                $file->move('uploads/category/',$filename);
+                $category -> cimage = 'uploads/category/'.$filename;
+            }
+
             $category-> status = $request -> input('status') === true ? '1': '0';
             $category -> update();
             return response()->json([

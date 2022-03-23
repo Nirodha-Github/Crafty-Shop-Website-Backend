@@ -21,6 +21,7 @@ class CreateCategoriesTable extends Migration
             $table->string('slug');
             $table->string('name');
             $table->longText('description')->nullable();
+            $table->string('cimage')->nullable();
             $table->tinyInteger('status')->default('0');
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ class AuthController extends Controller
         $validator = validator::make($request->all(),[
             'fname'=>'required|max:191',
             'lname'=>'required|max:191',
-            'email'=>'required|email|max:191|unique:users,Email',
+            'email'=>'required|email|max:191|unique:users,email',
             'phoneno'=>'required|max:10',
             'password'=>'required|min:8',
             'address'=>'required|max:191',
@@ -31,20 +31,21 @@ class AuthController extends Controller
         }
         else{
             $user = User::create([
-                'FirstName'=>$request->fname,
-                'LastName'=>$request->lname,
-                'Email'=>$request->email,
-                'PhoneNo'=>$request->phoneno,
-                'Address'=>$request->address,
-                'Password'=>Hash::make($request->password),
+                'firstname'=>$request->fname,
+                'lastname'=>$request->lname,
+                'email'=>$request->email,
+                'phoneno'=>$request->phoneno,
+                'address'=>$request->address,
+                'password'=>Hash::make($request->password),
                 
             ]);
 
-            $token = $user->createToken($user->Email.'_Token')->plainTextToken;
+            $token = $user->createToken($user->email.'_Token')->plainTextToken;
 
             return response()->json([
                 'status'=>200,
-                'username'=>$user->FirstName." ".$user->LastName,
+                'username'=>$user->firstname." ".$user->lastname,
+                'id'=>$user->id,
                 'token'=>$token,
                 'message'=>'Registered Successfully',
                 ]);
@@ -64,9 +65,9 @@ class AuthController extends Controller
         }
         else{
 
-             $user = User::where('Email', $request->email)->first();
+             $user = User::where('email', $request->email)->first();
 
-            if (! $user || ! Hash::check($request->password, $user->Password)) {
+            if (! $user || ! Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'status'=>401,
                     'message'=>'Invalid Credentials',
@@ -77,17 +78,18 @@ class AuthController extends Controller
                 if($user -> role_as == 1){
                     //1=Admin
                     $role= 'admin';
-                    $token = $user->createToken($user->Email.'_AdminToken',['server:admin'])->plainTextToken;
+                    $token = $user->createToken($user->email.'_AdminToken',['server:admin'])->plainTextToken;
                  
                 }
                 else{
                     $role = '';
-                    $token = $user->createToken($user->Email.'_Token',[''])->plainTextToken;
+                    $token = $user->createToken($user->email.'_Token',[''])->plainTextToken;
                 }
 
                 return response()->json([
                     'status'=>200,
-                    'username'=>$user->FirstName." ".$user->LastName,
+                    'username'=>$user->firstname." ".$user->lastname,
+                    'id'=>$user->id,
                     'token'=>$token,
                     'message'=>'Logged Successfully',
                     'role' => $role,
